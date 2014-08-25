@@ -11,8 +11,7 @@
          "unmap.rkt"
          (for-syntax syntax/id-table syntax/parse)
          (only-in scribble/struct make-flow make-omitable-paragraph flow-paragraphs
-                  make-blockquote make-styled-paragraph)
-         (for-label racket))
+                  make-blockquote make-styled-paragraph))
 
 (provide m mp um renewcommand
          graybox ; really specific
