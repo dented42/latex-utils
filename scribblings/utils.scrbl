@@ -2,6 +2,7 @@
 @(require (for-label scribble/struct
                     "../utils.rkt"
                     "../unmap.rkt"
+                    "../amsthm.rkt"
                     racket/base
                     racket/contract))
 
@@ -18,7 +19,7 @@ lead to some nasty interop with environments that parse their bodies, such as
 environments specifically.
 
 @section{Unicode Translation}
-@(declare-exporting "../unmap.rkt")
+@defmodule[scribble-latex-utils/unmap #:packages ("scribble-latex-utils")]
 
 @defthing[default-ops operators/c]{
 
@@ -73,7 +74,7 @@ Renders items in a context where @racket[math-mode] is @racket[#t]}
 Renders items in a context where @racket[math-mode] is @racket[#f]}
 
 @section{General utilities}
-@(declare-exporting "../utils.rkt")
+@defmodule[scribble-latex-utils/utils #:packages ("scribble-latex-utils")]
 
 @defproc[(exact [#:operators operators operators/c default-ops]
                 [item content?] ...) content?]{
@@ -152,7 +153,7 @@ style, which is a sequence of the identifiers @racket[l], @racket[r],
 Uses @racket[style-matrix] with all left-aligned colunms.}
 
 @section{@tt{amsthm} utilities}
-@(declare-exporting "../utils.rkt")
+@defmodule[scribble-latex-utils/amsthm #:packages ("scribble-latex-utils")]
 
 @defproc[(mdef [title content?]
                [#:tag tag (or/c content? #f)]
@@ -224,7 +225,7 @@ Like @racket[parthm], only for @racket[mlem], @racket[mprop], @racket[unthm]
 and @racket[ntprf] respectively.}
 
 @section{@tt{listings} utilities}
-@(declare-exporting "../utils.rkt")
+@(declare-exporting scribble-latex-utils/utils)
 
 @defproc[(lstlisting [#:math-escape? math-escape? #f]
                      [items content?] ...) content?]{
@@ -268,7 +269,7 @@ Provides a subset of possible inputs to the extensive @tt{\lstset} macro. See
 @tt{listings} documentation for usage.}
  
 @section{@tt{mathpartir} utilities}
-@(declare-exporting "../utils.rkt")
+@(declare-exporting scribble-latex-utils/utils)
 
 @defform[(mathpar items ...)]{
 
@@ -276,7 +277,7 @@ Renders items in @tt{mathpar} environment. Uses extra trickery with boxes to
 get it to work with scribble.}
 
 @section{@tt{pfsteps} utilities}
-@(declare-exporting "../utils.rkt")
+@(declare-exporting scribble-latex-utils/utils)
 
 Jesse Tov has an excellent LaTeX package for
 @hyperlink["http://www.eecs.harvard.edu/~tov/code/latex/"]{typesetting
@@ -296,7 +297,7 @@ For use as the last of the @racket[byCases] items. Instead of saying "Case
 [title]" it says "Otherwise". It does not have to be used.}
 
 @section{Miscellaneous}
-@(declare-exporting "../utils.rkt")
+@(declare-exporting scribble-latex-utils/utils)
 
 Random stuff I threw in for papers.
 
