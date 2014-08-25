@@ -10,7 +10,7 @@
          "private/utils.rkt")
 
 
-(define-runtime-path amsthm-path "amsthm.tex")
+(define-runtime-path amsthm-path "tex/amsthm.tex")
 
 (define amsthm-style
   (make-style "Iidentity" `(exact-chars ,(make-tex-addition amsthm-path))))

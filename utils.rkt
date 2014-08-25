@@ -34,10 +34,10 @@
  [env (->* (content?) (#:opt (listof (or/c bracket? curlies? parens?)))
            #:rest (listof content?) content?)])
 
-(define-runtime-path pfsteps-path "pfsteps.tex")
-(define-runtime-path listings-path "listings.tex")
-(define-runtime-path mathpar-path "mathpar.tex")
-(define-runtime-path bgcolor-path "bgcolor.tex")
+(define-runtime-path pfsteps-path "tex/pfsteps.tex")
+(define-runtime-path listings-path "tex/listings.tex")
+(define-runtime-path mathpar-path "tex/mathpar.tex")
+(define-runtime-path bgcolor-path "tex/bgcolor.tex")
 
 
 (define listings-addition (make-tex-addition listings-path))

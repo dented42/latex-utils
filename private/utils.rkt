@@ -13,7 +13,7 @@
          "../unmap.rkt")
 
 ;;; paths
-(define-runtime-path id-path "identity.tex")
+(define-runtime-path id-path "../tex/identity.tex")
 
 ;;; style helpers
 (define current-style (make-parameter exact-style))
