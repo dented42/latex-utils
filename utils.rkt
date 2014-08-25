@@ -1,19 +1,14 @@
 #lang at-exp racket
 
-(require scribble/eval scribble/core scribble/sigplan)
-(require scribble/manual
-         scribble/decode
-         scribble/bnf
-         scribble/racket
+(require scribble/core
          scribble/latex-properties
-         scheme/string
+         racket/string
          racket/runtime-path
          "unmap.rkt"
          "private/utils.rkt"
          (for-syntax syntax/id-table syntax/parse)
          (only-in scribble/struct make-flow make-omitable-paragraph flow-paragraphs
-                  make-blockquote make-styled-paragraph)
-         (for-label racket))
+                  make-blockquote make-styled-paragraph))
 
 (provide m mp um renewcommand
          graybox ; really specific
