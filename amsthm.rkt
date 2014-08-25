@@ -5,15 +5,8 @@
          tprf
          ntthm ntlem ntprf)
 
-(require racket/runtime-path
-         scribble/core scribble/latex-properties
-         "private/utils.rkt")
-
-
-(define-runtime-path amsthm-path "tex/amsthm.tex")
-
-(define amsthm-style
-  (make-style "Iidentity" `(exact-chars ,(make-tex-addition amsthm-path))))
+(require "private/utils.rkt"
+         "private/amsthm.rkt")
 
 (define (mdef title #:tag [tag #f] . items)
   (in-style amsthm-style (tenv "definition" title (apply tagit tag items))))
