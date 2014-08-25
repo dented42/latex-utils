@@ -1,7 +1,7 @@
 #lang racket
 
-(provide current-style in-style
-         exact-style
+(provide exact-style
+         current-style in-style
          (struct-out bracket)
          (struct-out curlies)
          (struct-out parens)
@@ -15,15 +15,15 @@
 ;;; paths
 (define-runtime-path id-path "../tex/identity.tex")
 
+;;; styles
+(define exact-style 
+  (make-style "Iidentity" `(exact-chars ,(make-tex-addition id-path))))
+
 ;;; style helpers
 (define current-style (make-parameter exact-style))
 
 (define-syntax-rule (in-style style body1 body ...)
   (parameterize ([current-style style]) body1 body ...))
-
-;;; styles
-(define exact-style 
-  (make-style "Iidentity" `(exact-chars ,(make-tex-addition id-path))))
 
 ;;; structs
 (struct bracket (element))
