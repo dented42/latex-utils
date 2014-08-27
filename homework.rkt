@@ -11,7 +11,8 @@
 (define-runtime-path homework-path "tex/homework.tex")
 
 (define homework-style
-  (make-style "Iidentity" `(exact-chars ,(make-tex-addition amsthm-path)
+  (make-style "Iidentity" `(exact-chars ,(make-tex-addition id-path)
+                                        ,(make-tex-addition amsthm-path)
                                         ,(make-tex-addition homework-path))))
 
 (define (mproblem title #:tag [tag #f] . items)

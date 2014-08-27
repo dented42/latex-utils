@@ -15,7 +15,8 @@
                   make-blockquote make-styled-paragraph)
          (for-label racket))
 
-(provide m mp um renewcommand
+(provide enumlist
+         m mp um renewcommand
          graybox ; really specific
          bracket curlies parens
          tenv
@@ -38,6 +39,15 @@
 (define-runtime-path listings-path "tex/listings.tex")
 (define-runtime-path mathpar-path "tex/mathpar.tex")
 (define-runtime-path bgcolor-path "tex/bgcolor.tex")
+
+
+(define-runtime-path enumabc-style-tex "tex/enumerationstyles.tex")
+
+(define enum-abc
+  (make-style "enumabc" `(,(make-tex-addition enumabc-style-tex))))
+
+(define (enumlist . item)
+  (apply itemlist #:style enum-abc item))
 
 
 (define listings-addition (make-tex-addition listings-path))

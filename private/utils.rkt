@@ -1,6 +1,7 @@
 #lang racket
 
-(provide exact-style
+(provide id-path
+         exact-style
          current-style in-style
          (struct-out bracket)
          (struct-out curlies)
