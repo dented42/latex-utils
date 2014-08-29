@@ -1,8 +1,10 @@
 #lang scribble/manual
+
 @(require (for-label scribble/struct
                     "../utils.rkt"
                     "../unmap.rkt"
                     "../amsthm.rkt"
+                    "../listings.rkt"
                     racket/base
                     racket/contract))
 
@@ -225,7 +227,7 @@ Like @racket[parthm], only for @racket[mlem], @racket[mprop], @racket[unthm]
 and @racket[ntprf] respectively.}
 
 @section{@tt{listings} utilities}
-@(declare-exporting scribble-latex-utils/utils)
+@defmodule[scribble-latex-utils/listings #:packages ("scribble-latex-utils")]
 
 @defproc[(lstlisting [#:math-escape? math-escape? #f]
                      [items content?] ...) content?]{
