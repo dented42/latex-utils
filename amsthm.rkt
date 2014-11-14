@@ -1,7 +1,7 @@
 #lang racket
 
 (provide mdef mthm mlem mprop mnotation mcor
-         parthm parunthm parlem parprop parprf
+         pardef parthm parunthm parlem parprop parprf
          tprf
          ntthm ntlem ntprf)
 
@@ -26,6 +26,8 @@
 (define (tprf title . items) 
   (in-style amsthm-style (tenv "proof" title items)))
 
+(define (pardef title #:tag [tag #f] . items)
+  (in-style amsthm-style (parblock "definition" title tag items)))
 (define (parthm title #:tag [tag #f] . items)
   (in-style amsthm-style (parblock "theorem" title tag items)))
 (define (parlem title #:tag [tag #f] . items)
