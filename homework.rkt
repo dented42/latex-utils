@@ -1,8 +1,9 @@
 #lang racket
 
-(provide show-solutions? mproblem msolution parproblem parsolution nproblem nsolution)
+(provide show-solutions? TODO mproblem msolution parproblem parsolution nproblem nsolution)
 
 (require racket/runtime-path
+         scribble/base
          scribble/core
          scribble/latex-properties
          "private/utils.rkt"
@@ -16,6 +17,12 @@
                                         ,(make-tex-addition homework-path))))
 
 (define show-solutions? (make-parameter #t))
+
+(define (TODO . t)
+  (displayln "UNFINISHED TODOs: DO NOT TURN IN")
+  ((compose larger italic bold)
+   (elem #:style (style #f `(,(color-property "red")))
+         "TODO: " t)))
 
 (define (mproblem title #:tag [tag #f] . items)
   (in-style homework-style (tenv "problem" title (apply tagit tag items))))

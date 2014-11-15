@@ -8,6 +8,8 @@
 (require "private/utils.rkt"
          "private/amsthm.rkt")
 
+;;; TODO: Make these consistent.
+
 (define (mdef title #:tag [tag #f] . items)
   (in-style amsthm-style (tenv "definition" title (apply tagit tag items))))
 (define (mthm title #:tag [tag #f] . items) 
