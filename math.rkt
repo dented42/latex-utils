@@ -4,11 +4,24 @@
 
 (require "utils.rkt")
 
-(define (value->content v)
+(define (value->content v #:auto-wrap? (wrap? #t) #:escape? (escape? #f))
+  (define (wrap . c)
+    (if wrap?
+        (list "{" c "}")
+        c))
+  (define (char->string c)
+    (list->string
+     (if escape?
+         (match c
+           [#\\ '(#\\ #\\ #\\ #\\)]
+           [#\{ '(#\\ #\{)]
+           [#\} '(#\\ #\})]
+           [c (list c)])
+         (list c))))
   (cond
-    [(string? v) (list "{" v "}")]
-    [(char? v) (list->string (list v))]
-    [(number? v) (list "{" (number->string v) "}")]))
+    [(string? v) (wrap v)]
+    [(char? v) (wrap (char->string v))]
+    [(number? v) (wrap (number->string v))]))
 
 (define (cal . stuff)
   (list "{\\mathcal{" stuff "}}"))
@@ -44,8 +57,11 @@
   (list "{\\frac{d" stuff "}{d" var "}}"))
 
 (define (delim delims . stuff)
-  (list "\\left"
-        (value->content (sequence-ref delims 0))
-        stuff
-        "\\right"
-        (value->content (sequence-ref delims 1))))
+  (let ([delims (if (and (string? delims) (= 2 (string-length delims)))
+                    (string->list delims)
+                    delims)])
+    (list "\\left"
+          (value->content (sequence-ref delims 0) #:auto-wrap? #f #:escape? #t)
+          stuff
+          "\\right"
+          (value->content (sequence-ref delims 1) #:auto-wrap? #f #:escape? #t))))

@@ -1,7 +1,7 @@
 #lang racket
 
 (provide mdef mthm mlem mprop mnotation mcor
-         pardef parthm parunthm parlem parprop parprf
+         pardef parthm parunthm parlem parprop parnotation parcor parprf
          tprf
          ntthm ntlem ntprf)
 
@@ -40,6 +40,10 @@
   (in-style amsthm-style (parblock "proof" #f tag items)))
 (define (parprop title #:tag [tag #f] . items)
   (in-style amsthm-style (parblock "property" title tag items)))
+(define (parnotation title #:tag [tag #f] . items)
+  (in-style amsthm-style (parblock "notation" title tag items)))
+(define (parcor title  #:tag [tag #f]. items) 
+  (in-style amsthm-style (parblock "corollary" title tag items)))
 
 (define (ntthm . items) (in-style amsthm-style (apply env "theorem" items)))
 (define (ntlem . items) (in-style amsthm-style (apply env "lemma" items)))
