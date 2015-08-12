@@ -9,21 +9,18 @@
          scheme/string
          racket/runtime-path
          "unmap.rkt"
+         "private/utils.rkt"
          (for-syntax syntax/id-table syntax/parse)
          (only-in scribble/struct make-flow make-omitable-paragraph flow-paragraphs
                   make-blockquote make-styled-paragraph))
 
-(provide m mp um renewcommand
+(provide enumlist
+         m mp um renewcommand
          graybox ; really specific
          bracket curlies parens
          tenv
          align* envalign*
          array style-matrix matrix
-         ;; amsthm
-         mdef mthm mlem mprop mnotation mcor
-         parthm parunthm parlem parprop parprf
-         tprf
-         ntthm ntlem ntprf
          ;; mathpartir
          mathpar
          ;; listings
@@ -32,40 +29,30 @@
          ;; pfsteps
          byCases bc-case bc-otherwise pfsteps*)
 
-(struct bracket (element))
-(struct curlies (element))
-(struct parens (element))
-
 (provide/contract
  [exact (->* () (#:operators operators/c) #:rest (listof content?) content?)]
  [env (->* (content?) (#:opt (listof (or/c bracket? curlies? parens?)))
            #:rest (listof content?) content?)])
 
-(define-runtime-path id-path "identity.tex")
-(define-runtime-path amsthm-path "amsthm.tex")
-(define-runtime-path pfsteps-path "pfsteps.tex")
-(define-runtime-path listings-path "listings.tex")
-(define-runtime-path mathpar-path "mathpar.tex")
-(define-runtime-path bgcolor-path "bgcolor.tex")
+(define-runtime-path pfsteps-path "tex/pfsteps.tex")
+(define-runtime-path listings-path "tex/listings.tex")
+(define-runtime-path mathpar-path "tex/mathpar.tex")
+(define-runtime-path bgcolor-path "tex/bgcolor.tex")
 
-(define exact-style 
-  (make-style "Iidentity" `(exact-chars ,(make-tex-addition id-path)
-                            )))
-(define current-style (make-parameter exact-style))
 
-(define amsthm-style
-  (make-style "Iidentity" `(exact-chars ,(make-tex-addition amsthm-path)
-                            )))
+(define-runtime-path enumabc-style-tex "tex/enumerationstyles.tex")
+
+(define enum-abc
+  (make-style "enumabc" `(,(make-tex-addition enumabc-style-tex))))
+
+(define (enumlist . item)
+  (apply itemlist #:style enum-abc item))
+
+
 (define listings-addition (make-tex-addition listings-path))
 (define pfsteps-style
   (make-style "Iidentity" `(exact-chars ,(make-tex-addition pfsteps-path)
                             )))
-
-(define (exact #:operators [operators default-ops] . items)
-  (make-element (current-style)
-                (map (λ (i) 
-                        (content->latex-content i #:operators operators))
-                     items)))
 
 (define-syntax-rule (m items ...)
   (cond [(math-mode) (exact items ...)]
@@ -80,27 +67,9 @@
 (define (renewcommand item0 item1)
   (make-multiarg-element (make-style "renewcommand" '(exact-chars)) (list item0 item1)))
 
-(define (tagit tag . items)
-  (cond [tag (cons (exact `("\\label{" ,tag "}")) items)]
-        [else items]))
-
 (define bg-color-style
   (make-style "BgColor" (list (make-tex-addition bgcolor-path))))
 (define (graybox elm) (make-element bg-color-style elm))
-
-(define (interpret-option option)
-  (match option
-    [(bracket e) `("[" ,e "]")]
-    [(curlies e) `("{" ,e "}")]
-    [(parens e) `("(" ,e ")")]))
-
-(define (env t #:opt [optional '()] . items)
-  (apply exact `("\\begin{" ,t "}"
-                 ,@(append-map interpret-option optional)
-                 ,@items
-                 "\\end{" ,t "}")))
-(define (tenv t title items)
-  (keyword-apply env '() '() t items #:opt (list (bracket title))))
 
 (define-syntax-rule (mathpar items ...)
   (list (make-element (make-style "setbox\\mymathpar=\\vbox" 
@@ -208,9 +177,6 @@
 (define (array style . items)
   (keyword-apply env '() '() "array" items #:opt (list (curlies style))))
 
-(define-syntax-rule (in-style style body1 body ...)
-  (parameterize ([current-style style]) body1 body ...))
-
 ;; For working with Jesse's pfsteps library
 (define-syntax-rule (byCases items ...)
   (in-style pfsteps-style (env "byCases" items ...)))
@@ -220,73 +186,6 @@
   (in-style pfsteps-style (exact "\\case{" (in-math (um title)) "}" items ...)))
 (define-syntax-rule (bc-otherwise items ...)
   (in-style pfsteps-style (exact `("\\otherwise{}" items ...))))
-
-(define (parblock env title tag items)
-  (define par
-    (make-paragraph (current-style)
-                    (exact `("\\begin{" ,env "}"
-                             ,@(if title
-                                   `("[" ,title "]")
-                                   '())))))
-  (define blocks
-    (map content->block (collapse-content (apply tagit tag items))))
-  (define end
-    (make-paragraph (current-style)  (exact `("\\end{" ,env "}"))))
-  (make-compound-paragraph (current-style)
-                           (append (list par) blocks (list end))))
-
-(define (mdef title #:tag [tag #f] . items)
-  (in-style amsthm-style (tenv "definition" title (apply tagit tag items))))
-(define (mthm title #:tag [tag #f] . items) 
-  (in-style amsthm-style (tenv "theorem" title (apply tagit tag items))))
-(define (mlem title #:tag [tag #f] . items)
-  (in-style amsthm-style (tenv "lemma" title (apply tagit tag items))))
-(define (mprop title #:tag [tag #f] . items)
-  (in-style amsthm-style (tenv "property" title (apply tagit tag items))))
-(define (mcor title  #:tag [tag #f]. items) 
-  (in-style amsthm-style (tenv "corollary" title (apply tagit tag items))))
-(define (mnotation title #:tag [tag #f] . items) 
-  (in-style amsthm-style (tenv "notation" title (apply tagit tag items))))
-(define (unthm title #:tag [tag #f] . items) 
-  (in-style amsthm-style (tenv "untheorem" title (apply tagit tag items))))
-
-(define (tprf title . items) 
-  (in-style amsthm-style (tenv "proof" title items)))
-
-(define (parthm title #:tag [tag #f] . items)
-  (in-style amsthm-style (parblock "theorem" title tag items)))
-(define (parlem title #:tag [tag #f] . items)
-  (in-style amsthm-style (parblock "lemma" title tag items)))
-(define (parunthm title #:tag [tag #f] . items)
-  (in-style amsthm-style (parblock "untheorem" title tag items)))
-(define (parprf #:tag [tag #f] . items)
-  (in-style amsthm-style (parblock "proof" #f tag items)))
-(define (parprop title #:tag [tag #f] . items)
-  (in-style amsthm-style (parblock "property" title tag items)))
-
-(define (ntthm . items) (in-style amsthm-style (apply env "theorem" items)))
-(define (ntlem . items) (in-style amsthm-style (apply env "lemma" items)))
-(define (ntprf . items) (in-style amsthm-style (apply env "proof" items)))
-;; align* is a special LaTeX environment that puts its body directly in a math mode context.
-(define-syntax-rule (envalign* items ...)
-  (in-math (env "align*" items ...)))
-
-(define (content->block c)
-  (if (content? c)
-      (make-paragraph (current-style) c)
-      c))
-(define (collapse-content items)
-  (let recur ([items items]
-              [current '()]
-              [all '()])
-    (define (extend)
-      (if (empty? current)
-          all
-          (cons (reverse current) all)))
-    (cond [(empty? items) (reverse (extend))]
-          [(content? (car items))
-           (recur (cdr items) (cons (car items) current) all)]
-          [else (recur (cdr items) '() (cons (car items) (extend)))])))
 
 (define-syntax (sep-rows stx)
   (syntax-case stx ()
@@ -311,6 +210,10 @@
     [(_ (args ...) ...)
      (let ([rows (local-expand #'(sep-rows (args ...) ...) 'expression #f)])
        #`(envalign* #,@rows))]))
+
+;; align* is a special LaTeX environment that puts its body directly in a math mode context.
+(define-syntax-rule (envalign* items ...)
+  (in-math (env "align*" items ...)))
 
 (define-syntax (style-matrix stx)
   (define lut (make-free-id-table (hasheq #'l #\l #'r #\r #'c #\c #'bar #\|)))

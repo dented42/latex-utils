@@ -2,6 +2,7 @@
 @(require (for-label scribble/struct
                     "../utils.rkt"
                     "../unmap.rkt"
+                    "../amsthm.rkt"
                     racket/base
                     racket/contract))
 
@@ -152,7 +153,7 @@ style, which is a sequence of the identifiers @racket[l], @racket[r],
 Uses @racket[style-matrix] with all left-aligned colunms.}
 
 @section{@tt{amsthm} utilities}
-@(declare-exporting scribble-latex-utils/utils)
+@defmodule[scribble-latex-utils/amsthm #:packages ("scribble-latex-utils")]
 
 @defproc[(mdef [title content?]
                [#:tag tag (or/c content? #f)]
