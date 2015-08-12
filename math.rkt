@@ -1,27 +1,32 @@
 #lang at-exp racket
 
-(provide cal mcal bb mbb bf mbf sf msf rm mrm dd delim)
+(provide #;nested-subs? sub cal mcal bb mbb bf mbf sf msf rm mrm dd delim implies forall exists one)
 
-(require "utils.rkt")
+(require (only-in "utils.rkt" m)
+         "private/math.rkt"
+         "private/utils.rkt")
 
-(define (value->content v #:auto-wrap? (wrap? #t) #:escape? (escape? #f))
-  (define (wrap . c)
-    (if wrap?
-        (list "{" c "}")
-        c))
-  (define (char->string c)
-    (list->string
-     (if escape?
-         (match c
-           [#\\ '(#\\ #\\ #\\ #\\)]
-           [#\{ '(#\\ #\{)]
-           [#\} '(#\\ #\})]
-           [c (list c)])
-         (list c))))
-  (cond
-    [(string? v) (wrap v)]
-    [(char? v) (wrap (char->string v))]
-    [(number? v) (wrap (number->string v))]))
+(define (sub . scripts)
+  (let rec ([scripts scripts])
+    (if (null? scripts)
+        ""
+        (list "_{" (value->content (car scripts)) (rec (cdr scripts)) "}"))))
+
+;;; this doesn't work
+#;(define nested-subs?
+  (make-parameter #f))
+#;(define (sub . scripts)
+  (let rec ([scripts (map value->content scripts)])
+    (if (null? scripts)
+        ""
+        (if (nested-subs?)
+              (list (car scripts)
+                    (if (null? (cdr scripts))
+                        ""
+                        (list "_{" (rec (cdr scripts)) "}")))
+              (if (null? (cdr scripts))
+                  (list (car scripts))
+                  (rec (cons (list "{" (car scripts) "_" (cadr scripts) "}") (cddr scripts))))))))
 
 (define (cal . stuff)
   (list "{\\mathcal{" stuff "}}"))
@@ -65,3 +70,14 @@
           stuff
           "\\right"
           (value->content (sequence-ref delims 1) #:auto-wrap? #f #:escape? #t))))
+
+(define implies "\\Rightarrow")
+
+(define (forall item (set #f) (delims #f) (relation "∈"))
+  (curry quantifier "∀" item set delims relation))
+
+(define (exists item (set #f) (delims #f) (relation "∈"))
+  (quantifier "∃" item set delims relation))
+
+(define (one . content)
+  (list "\\frac{" content "}{" content "}"))

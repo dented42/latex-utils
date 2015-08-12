@@ -7,6 +7,7 @@
          (struct-out curlies)
          (struct-out parens)
          interpret-option
+         value->content
          env tenv parblock exact tagit)
 
 (require racket/runtime-path
@@ -37,6 +38,26 @@
     [(bracket e) `("[" ,e "]")]
     [(curlies e) `("{" ,e "}")]
     [(parens e) `("(" ,e ")")]))
+
+(define (value->content v #:auto-wrap? (wrap? #t) #:escape? (escape? #f))
+  (define (wrap . c)
+    (if wrap?
+        (list "{" c "}")
+        c))
+  (define (char->string c)
+    (list->string
+     (if escape?
+         (match c
+           [#\\ '(#\\ #\\ #\\ #\\)]
+           [#\{ '(#\\ #\{)]
+           [#\} '(#\\ #\})]
+           [c (list c)])
+         (list c))))
+  (cond
+    [(string? v) (wrap v)]
+    [(char? v) (wrap (char->string v))]
+    [(number? v) (wrap (number->string v))]
+    [(symbol? v) (value->content (symbol->string v))]))
 
 (define (content->block c)
   (if (content? c)
