@@ -13,7 +13,7 @@
          scribble/core
          scribble/latex-properties
          "private/utils.rkt"
-         "private/amsthm.rkt")
+         "private/theorem.rkt")
 
 (define (homework-title class  #:number (number #f) #:teacher (teacher #f) . assignment)
    (apply title `(,(bold class)

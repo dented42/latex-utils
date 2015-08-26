@@ -16,7 +16,7 @@
          proof-ref Proof-ref)
 
 (require "private/utils.rkt"
-         "private/amsthm.rkt")
+         "private/theorem.rkt")
 
 (define def-tag-prefix (make-parameter "def:"))
 (define thm-tag-prefix (make-parameter "thm:"))
