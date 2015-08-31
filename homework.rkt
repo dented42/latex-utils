@@ -46,7 +46,8 @@
 
 
 (define-amsthm-wrapper problem problem
-  #:base-style homework-style)
+  #:base-style homework-style
+  #:auto-generate-tags #t)
 (define-amsthm-wrapper solution solution
   #:base-style homework-style
   #:no-title)

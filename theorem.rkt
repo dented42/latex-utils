@@ -20,8 +20,10 @@
          "private/theorem.rkt"
          "references.rkt")
 
-(define-amsthm-wrapper definition def)
-(define-amsthm-wrapper theorem thm)
+(define-amsthm-wrapper definition def
+  #:auto-generate-tags #t)
+(define-amsthm-wrapper theorem thm
+  #:auto-generate-tags #t)
 (define-amsthm-wrapper lemma lem)
 (define-amsthm-wrapper property prop)
 (define-amsthm-wrapper corollary cor)

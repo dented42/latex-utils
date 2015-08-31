@@ -42,8 +42,8 @@
             (list #,id/str #,tag-seperator* raw-tag)
             (list #,(env-map id/str) #,space-seperator* raw-ref)))))
 
-  (define lowercase-ref-xforms (simple-define-ref-form-maker string-downcase))
-  (define titlecase-ref-xforms (simple-define-ref-form-maker string-titlecase)))
+  (define lowercase-ref-gens (simple-define-ref-form-maker string-downcase))
+  (define titlecase-ref-gens (simple-define-ref-form-maker string-titlecase)))
 
 (define-syntax (define-amsthm-wrapper stx)
   (syntax-parse stx
@@ -51,37 +51,49 @@
         (~seq (~optional (~seq #:base-style main-style:expr)
                          #:defaults ([main-style #'amsthm-style]))
               (~optional (~and #:no-title (~bind [show-title #f]))
-                         #:defaults ([show-title #t]))))
+                         #:defaults ([show-title #t]))
+              (~optional (~seq #:auto-generate-tags auto-tags:boolean)
+                         #:defaults ([auto-tags #'#f]))))
      (let* ([env*/sym (syntax->datum #'env)]
             [env*/str (symbol->string env*/sym)])
        (with-syntax ([env/str (datum->syntax #'env env*/str #'env)]
                      [prefix-tag-param (build-identifier #'env "current-" #'env "-tag-prefix")]
+                     [autogenerate-tag-param (build-identifier #'env
+                                                               "current-"
+                                                               #'env
+                                                               "-tag-autogeneration-enabled")]
                      [visibility-param (build-identifier #'env "current-" #'env "-visibility")]
                      [menv (build-identifier #'shortcut "m" #'shortcut)]
-                     [parenv (build-identifier #'shortcut "par" #'shortcut)]
-                     [((ref-name ref-tag-expr ref-ref-expr) ...) #`(#,(lowercase-ref-xforms #'env)
-                                                                    #,(titlecase-ref-xforms #'env))])
-       #`(begin
-           ;; define tag prefix parameter
-           (define prefix-tag-param (make-parameter #,(string-append env*/str ":")))
-           ;; define visibility parameter
-           (define visibility-param (make-parameter #t))
-           ;;; define refs
-           (define-ref-form ref-name ref-tag-expr ref-ref-expr) ...
-           ;;; define raw environment wrapper
-           (define (menv title #:tag [tag #f] . items)
-             (when (visibility-param)
-               (in-style main-style
-                         (tenv env/str
-                               title
-                               (apply tagit
-                                      (prefix-tag tag (prefix-tag-param))
-                                      items)))))
-           ;;; define paragraph wrapped environment wrapper
-           (define (parenv #,@(if (attribute show-title) #'(title) #'()) #:tag [tag #f] . items)
-             (when (visibility-param)
-               (in-style main-style
-                         (parblock env/str
-                                   #,(if (attribute show-title) #'title #'#f)
-                                   (prefix-tag tag (prefix-tag-param))
-                                   items)))))))]))
+                     [parenv (build-identifier #'shortcut "par" #'shortcut)])
+         (with-syntax ([((ref-name ref-tag-expr ref-ref-expr) ...) #`(#,(lowercase-ref-gens #'env)
+                                                                      #,(titlecase-ref-gens #'env))]
+                       [default-tag (if (attribute show-title) #'(if (autogenerate-tag-param)
+                                                                     (normalize-tag title)
+                                                                     #f) #'#f)])
+           #`(begin
+               ;; define tag prefix parameter
+               (define prefix-tag-param (make-parameter #,(string-append env*/str ":")))
+               ;; define tag autogeneration parameter
+               (define autogenerate-tag-param (make-parameter auto-tags))
+               ;; define visibility parameter
+               (define visibility-param (make-parameter #t))
+               ;;; define refs
+               (define-ref-form ref-name ref-tag-expr ref-ref-expr) ...
+               ;;; define raw environment wrapper
+               (define (menv title #:tag [tag default-tag] . items)
+                 (when (visibility-param)
+                   (in-style main-style
+                             (tenv env/str
+                                   title
+                                   (apply tagit
+                                          (prefix-tag tag (prefix-tag-param))
+                                          items)))))
+               ;;; define paragraph wrapped environment wrapper
+               (define (parenv #,@(if (attribute show-title) #'(title) #'())
+                               #:tag [tag default-tag] . items)
+                 (when (visibility-param)
+                   (in-style main-style
+                             (parblock env/str
+                                       #,(if (attribute show-title) #'title #'#f)
+                                       (prefix-tag tag (prefix-tag-param))
+                                       items))))))))]))
