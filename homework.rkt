@@ -1,10 +1,10 @@
 #lang racket
 
 (provide homework-title
-         show-solutions?
-         hide-todos? silence-todo-warnings? TODO
+         current-solution-visibility
+         current-todo-visibility current-todo-warnings-enabled TODO
          mproblem msolution parproblem parsolution nproblem nsolution
-         problem-tag-prefix solution-tag-prefix
+         current-problem-tag-prefix current-solution-tag-prefix
          problem-ref Problem-ref
          solution-ref Solution-ref)
 
@@ -13,7 +13,8 @@
          scribble/core
          scribble/latex-properties
          "private/utils.rkt"
-         "private/theorem.rkt")
+         "private/theorem.rkt"
+         "references.rkt")
 
 (define (homework-title class  #:number (number #f) #:teacher (teacher #f) . assignment)
    (apply title `(,(bold class)
@@ -24,54 +25,37 @@
 
 (define-runtime-path homework-path "tex/homework.tex")
 
+
 (define homework-style
   (make-style "Iidentity" `(exact-chars ,(make-tex-addition id-path)
                                         ,(make-tex-addition amsthm-path)
                                         ,(make-tex-addition homework-path))))
 
-(define show-solutions? (make-parameter #t))
-
-(define hide-todos? (make-parameter #f))
-(define silence-todo-warnings? (make-parameter #f))
+(define current-todo-visibility (make-parameter #t))
+(define current-todo-warnings-enabled (make-parameter #t))
 
 (define (TODO . t)
-  (when (not (silence-todo-warnings?))
+  (when (current-todo-warnings-enabled)
     (displayln "UNFINISHED TODOs: DO NOT TURN IN"))
-  (if (hide-todos?)
-      '()
+  (if (current-todo-visibility)
       ((compose larger italic bold)
        (elem #:style (style #f `(,(color-property "red")))
-             "TODO: " t))))
-
-(define problem-tag-prefix (make-parameter "problem:"))
-
-(define solution-tag-prefix (make-parameter "solution:"))
-
-(define (mproblem title #:tag [tag #f] . items)
-  (if (show-solutions?)
-      (in-style homework-style
-                (tenv "problem" title (apply tagit (prefix-tag tag (problem-tag-prefix)) items)))
+             "TODO: " t))
       '()))
-(define (msolution title #:tag [tag #f] . items)
-  (in-style homework-style
-            (tenv "solution" title (apply tagit (prefix-tag tag (solution-tag-prefix)) items))))
 
-(define (parproblem title #:tag [tag #f] . items)
-  (in-style homework-style
-            (parblock "problem" title (prefix-tag tag (problem-tag-prefix)) items)))
-(define (parsolution #:tag [tag #f] . items)
-  (if (show-solutions?)
-      (in-style homework-style (parblock "solution" #f (prefix-tag tag (solution-tag-prefix)) items))
-      '()))
+
+
+(define-amsthm-wrapper problem problem
+  #:base-style homework-style
+  #:auto-generate-tags #t)
+(define-amsthm-wrapper solution solution
+  #:base-style homework-style
+  #:no-title)
+
+
 
 (define (nproblem . items) (in-style homework-style (apply env "problem" items)))
 (define (nsolution . items)
-  (if (show-solutions?)
+  (if (current-solution-visibility)
       (in-style homework-style (apply env "solution" items))
       '()))
-
-(define (problem-ref tag) (list "problem " (ref (string-append (problem-tag-prefix) tag))))
-(define (Problem-ref tag) (list "Problem " (ref (string-append (problem-tag-prefix) tag))))
-
-(define (solution-ref tag) (list "solution " (ref (string-append (solution-tag-prefix) tag))))
-(define (Solution-ref tag) (list "Solution " (ref (string-append (solution-tag-prefix) tag))))
