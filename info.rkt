@@ -5,6 +5,7 @@
 (define version "0.0.1.0")
 
 (define deps '("base"
-               "scribble-lib"))
+               "scribble-lib"
+               "seq-no-order"))
 
 (define scribblings '(("scribblings/utils.scrbl")))
