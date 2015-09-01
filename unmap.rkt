@@ -274,6 +274,7 @@
            [(#\▹) (mathify "\\triangleleft")]
            [(#\⊘) (mathify "\\oslash")]
            [(#\∗) (mathify "\\ast")]
+           [(#\∑) (mathify "\\sum")]
            [(#\⊓) (mathify "\\sqcap")]
            [(#\⋂) (unsafe-mathify "\\bigcap")]
            [(#\∏) (unsafe-mathify "\\bigsqcap")]
