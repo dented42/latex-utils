@@ -5,6 +5,7 @@
          define-amsthm-wrapper)
 
 (require racket/runtime-path
+         (for-syntax seq-no-order)
          (for-syntax racket/base
                      racket/list
                      syntax/parse
@@ -47,13 +48,14 @@
 
 (define-syntax (define-amsthm-wrapper stx)
   (syntax-parse stx
-    [(_ env:id shortcut:id
-        (~seq (~optional (~seq #:base-style main-style:expr)
-                         #:defaults ([main-style #'amsthm-style]))
-              (~optional (~and #:no-title (~bind [show-title #f]))
-                         #:defaults ([show-title #t]))
-              (~optional (~seq #:auto-generate-tags auto-tags:boolean)
-                         #:defaults ([auto-tags #'#f]))))
+    [(_ ~no-order
+        (~seq env:id shortcut:id)
+        (~optional (~seq #:base-style main-style:expr)
+                   #:defaults ([main-style #'amsthm-style]))
+        (~optional (~and #:no-title (~bind [show-title #f]))
+                   #:defaults ([show-title #t]))
+        (~optional (~seq #:auto-generate-tags auto-tags:boolean)
+                   #:defaults ([auto-tags #'#f])))
      (let* ([env*/sym (syntax->datum #'env)]
             [env*/str (symbol->string env*/sym)])
        (with-syntax ([env/str (datum->syntax #'env env*/str #'env)]
