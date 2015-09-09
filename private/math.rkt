@@ -13,9 +13,10 @@
 (define (quantifier quant item set delims relation)
   (let ([opening-delim (sequence-ref (or delims (current-quantifier-delimiters)) 0)]
         [closing-delim (sequence-ref (or delims (current-quantifier-delimiters)) 1)])
-    (list (value->content opening-delim) " "
-          quant "\\ " item
-          (if set
-              (list " " (value->content relation) " " (value->content set))
-              '())
-          " " (value->content closing-delim))))
+    (wrap
+     (list (value->content opening-delim)
+           (value->content quant) (value->content "\\ ") (value->content item)
+           (if set
+               (list (value->content relation) (value->content set))
+               '())
+           (value->content closing-delim)))))
