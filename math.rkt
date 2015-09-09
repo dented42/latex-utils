@@ -1,10 +1,11 @@
-#lang at-exp racket
+#lang at-exp racket/base
 
 (provide #;nested-subs? sub cal mcal bb mbb bf mbf sf msf rm mrm dd delim implies forall exists one)
 
 (require (only-in "utils.rkt" m)
          "private/math.rkt"
-         "private/utils.rkt")
+         "private/utils.rkt"
+         racket/sequence)
 
 (define (sub . scripts)
   (let rec ([scripts scripts])
