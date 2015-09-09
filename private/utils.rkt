@@ -7,6 +7,7 @@
          (struct-out curlies)
          (struct-out parens)
          interpret-option
+         wrap
          value->content
          env tenv parblock exact tagit)
 
@@ -39,11 +40,20 @@
     [(curlies e) `("{" ,e "}")]
     [(parens e) `("(" ,e ")")]))
 
+(define (wrap . c)
+  `("{" ,c "}"))
+
+;;; wrapper is
+;;;  - #t -> wrap
+;;;  - #f -> identity
+;;;  - some-function -> some-function
 (define (value->content v #:auto-wrap? (wrap? #t) #:escape? (escape? #f))
-  (define (wrap . c)
-    (if wrap?
-        (list "{" c "}")
-        c))
+  (define (wrapper . c)
+    ((cond
+      [(eq? #t wrap?) wrap]
+      [(false? wrap?) identity]
+      [else wrap?])
+     c))
   (define (char->string c)
     (list->string
      (if escape?
@@ -54,10 +64,13 @@
            [c (list c)])
          (list c))))
   (cond
-    [(string? v) (wrap v)]
-    [(char? v) (wrap (char->string v))]
-    [(number? v) (wrap (number->string v))]
-    [(symbol? v) (value->content (symbol->string v))]))
+    [(string? v) (wrapper v)]
+    [(char? v) (wrapper (char->string v))]
+    [(number? v) (wrapper (number->string v))]
+    [(symbol? v) (value->content (symbol->string v))]
+    [(list? v) (wrapper (if (content? v)
+                            v
+                            (map value->content v)))]))
 
 (define (content->block c)
   (if (content? c)
