@@ -74,7 +74,7 @@
 (define implies "\\Rightarrow")
 
 (define (forall item (set #f) (delims #f) (relation "∈"))
-  (curry quantifier "∀" item set delims relation))
+  (quantifier "∀" item set delims relation))
 
 (define (exists item (set #f) (delims #f) (relation "∈"))
   (quantifier "∃" item set delims relation))
