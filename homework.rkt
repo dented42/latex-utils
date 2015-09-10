@@ -5,8 +5,8 @@
          current-todo-visibility current-todo-warnings-enabled TODO
          mproblem msolution parproblem parsolution nproblem nsolution
          current-problem-tag-prefix current-solution-tag-prefix
-         problem-ref Problem-ref
-         solution-ref Solution-ref)
+         problem-ref Problem-ref problem-ref* Problem-ref*
+         solution-ref Solution-ref solution-ref* Solution-ref*)
 
 (require racket/runtime-path
          scribble/base

@@ -17,6 +17,9 @@
      (list (value->content opening-delim)
            (value->content quant) (value->content "\\ ") (value->content item)
            (if set
-               (list (value->content relation) (value->content set))
+               (list (value->content "\\ ")
+                     (value->content relation)
+                     (value->content "\\ ")
+                     (value->content set))
                '())
            (value->content closing-delim)))))

@@ -26,17 +26,19 @@
       (string-append prefix tag)
       default))
 
-(define (ref tag)
-   (exact "\\ref{" tag "}"))
+(define (ref tag #:naked? (naked? #f))
+   ((if naked? list exact) "\\ref{" tag "}"))
 
 (define-syntax (define-ref-form stx)
   (syntax-parse stx
-    [(_ name:id tag-xform:expr ref-xform:expr)
-     #'(define (name tag)
+    [(_ name:id tag-xform:expr ref-xform:expr
+        (~optional (~seq #:naked naked?:boolean)
+                   #:defaults ([naked? #'#f])))
+     #`(define (name tag)
          (let ([tag-ref (syntax-parameterize ([raw-tag (λ (stx) ; raw-tag -> tag
                                                          (syntax-parse stx
                                                            [_:id #'tag]))])
-                          (ref tag-xform))])
+                          (ref tag-xform #:naked? naked?))])
            (syntax-parameterize ([raw-ref (λ (stx) ; raw-ref -> tag-ref
                                             (syntax-parse stx
                                               [_:id #'tag-ref]))])

@@ -7,14 +7,14 @@
          current-definition-tag-prefix current-theorem-tag-prefix current-lemma-tag-prefix
          current-property-tag-prefix current-corollary-tag-prefix current-notation-tag-prefix
          current-conjecture-tag-prefix current-proof-tag-prefix
-         definition-ref Definition-ref
-         theorem-ref Theorem-ref
-         lemma-ref Lemma-ref
-         property-ref Property-ref
-         corollary-ref Corollary-ref
-         notation-ref Notation-ref
-         conjecture-ref Conjecture-ref
-         proof-ref Proof-ref)
+         definition-ref Definition-ref definition-ref* Definition-ref*
+         theorem-ref Theorem-ref theorem-ref* Theorem-ref*
+         lemma-ref Lemma-ref lemma-ref* Lemma-ref*
+         property-ref Property-ref property-ref* Property-ref*
+         corollary-ref Corollary-ref corollary-ref* Corollary-ref*
+         notation-ref Notation-ref notation-ref* Notation-ref*
+         conjecture-ref Conjecture-ref conjecture-ref* Conjecture-ref*
+         proof-ref Proof-ref proof-ref* Proof-ref*)
 
 (require "private/utils.rkt"
          "private/theorem.rkt"
