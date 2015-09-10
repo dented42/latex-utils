@@ -76,19 +76,8 @@ Extends or overrides @racket[default-ops].}
   Renders items in a context where @racket[math-mode] is @racket[#f]}
 }
 
-@section{General utilities}
-@defmodule[scribble-latex-utils/utils #:packages ("scribble-latex-utils")]
-
-@defproc[(exact [#:operators operators operators/c default-ops]
-                [item content?] ...) content?]{
-Core form that renders all input to text and wraps it in @tt{\identity}. If the
-content contains Unicode characters, then many of them will be rendered to the
-right LaTeX command. Some composing Unicode characters are supported too. See
-@racket[overload-op*].
-
-This Unicode translation does not play nicely with @racket[delayed-element?]
-or @racket[part-relative-element?] since I don't know how to correctly wrap
-these to do the translation.}
+@section{Math utilities}
+@defmodule[scribble-latex-utils/math #:packages ("scribble-latex-utils")]
 
 @defform[(m item ...)]{
 Renders items in math mode with the same guarantees as @racket[exact]. Uses of
@@ -101,32 +90,6 @@ Renders items ensuring not in math mode (uses @tt{\mbox}).}
 
 @defform[(mp item ...)]{
 Like @racket[m], only uses @tt{\[...\]} instead of @tt{$...$}.}
-
-@defproc[(renewcommand [left content?] [right content?]) content?]{
-Wrapper for LaTeX's @tt{\renewcommand}.}
-
-@deftogether[(
-@defstruct[bracket ([element content?])]
-@defstruct[curlies ([element content?])]
-@defstruct[parens ([element content?])])]{
-Structures that are intepreted by @racket[env] to wrap the given element in
-brackets, braces or parens respectively.}
-
-@defproc[(env [t content?]
-              [#:opt optional (listof (or/c brackets? curlies? parens?)) '()]
-              [items content?] ...) content?]{
-
-Wraps items in the @racket[t] environment, and optionally renders an assortment
-of wrapped content to allow for inputting optional arguments to the
-environment. For example, @tt{\begin{array}{cc}l&r\end{array}} is @racket[(env
-"array" (list (curlies "cc")) "l&r")].}
-
-@defproc[(tenv [t content?]
-               [title content?]
-               [items content?] ...) content?]{
-
-Uses @racket[env] in an idiomatic way, giving a ``title'' to an environment by
-using @racket[(list (brackets title))] as the optional argument.}
 
 @defform[(envalign* items ...)]{
 
@@ -154,6 +117,46 @@ style, which is a sequence of the identifiers @racket[l], @racket[r],
 @defform[(matrix (args ...) ...)]{
 
 Uses @racket[style-matrix] with all left-aligned colunms.}
+
+@section{General utilities}
+@defmodule[scribble-latex-utils/utils #:packages ("scribble-latex-utils")]
+
+@defproc[(exact [#:operators operators operators/c default-ops]
+                [item content?] ...) content?]{
+Core form that renders all input to text and wraps it in @tt{\identity}. If the
+content contains Unicode characters, then many of them will be rendered to the
+right LaTeX command. Some composing Unicode characters are supported too. See
+@racket[overload-op*].
+
+This Unicode translation does not play nicely with @racket[delayed-element?]
+or @racket[part-relative-element?] since I don't know how to correctly wrap
+these to do the translation.}
+
+@defproc[(renewcommand [left content?] [right content?]) content?]{
+Wrapper for LaTeX's @tt{\renewcommand}.}
+
+@deftogether[(
+@defstruct[bracket ([element content?])]
+@defstruct[curlies ([element content?])]
+@defstruct[parens ([element content?])])]{
+Structures that are intepreted by @racket[env] to wrap the given element in
+brackets, braces or parens respectively.}
+
+@defproc[(env [t content?]
+              [#:opt optional (listof (or/c brackets? curlies? parens?)) '()]
+              [items content?] ...) content?]{
+
+Wraps items in the @racket[t] environment, and optionally renders an assortment
+of wrapped content to allow for inputting optional arguments to the
+environment. For example, @tt{\begin{array}{cc}l&r\end{array}} is @racket[(env
+"array" (list (curlies "cc")) "l&r")].}
+
+@defproc[(tenv [t content?]
+               [title content?]
+               [items content?] ...) content?]{
+
+Uses @racket[env] in an idiomatic way, giving a ``title'' to an environment by
+using @racket[(list (brackets title))] as the optional argument.}
 
 @section{Theorem utilities}
 @defmodule[scribble-latex-utils/thorem #:packages ("scribble-latex-utils")]
