@@ -4,8 +4,15 @@
 
 (define version "0.0.1.0")
 
-(define deps '("base"
-               "scribble-lib"
-               "seq-no-order"))
+(define deps
+  '("base"
+    "scheme-lib"
+    "scribble-lib"
+    "seq-no-order"))
+
+(define build-deps
+  '("at-exp-lib"
+    "racket-doc"
+    "scribble-doc"))
 
 (define scribblings '(("scribblings/utils.scrbl")))
