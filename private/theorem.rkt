@@ -31,6 +31,7 @@
 
 (begin-for-syntax
   (define (simple-define-ref-form-maker env-map ; remaps the env name (like from theorem to Theorem)
+                                        (naked #f) ; tells whether or not to wrap the ref in math-mode
                                         (name-suffix "-ref") ; gets added to the end of the name
                                         (tag-seperator ":") ; used to seperate prefix from tag body
                                         (space-seperator " ")) ; seperates env name and ref# in body
@@ -41,10 +42,13 @@
              [space-seperator* (datum->syntax id space-seperator)])
         #`(#,name
             (list #,id/str #,tag-seperator* raw-tag)
-            (list #,(env-map id/str) #,space-seperator* raw-ref)))))
+            (list #,(env-map id/str) #,space-seperator* raw-ref)
+            #,naked))))
 
   (define lowercase-ref-gens (simple-define-ref-form-maker string-downcase))
-  (define titlecase-ref-gens (simple-define-ref-form-maker string-titlecase)))
+  (define titlecase-ref-gens (simple-define-ref-form-maker string-titlecase))
+  (define lowercase-raw-ref-gens (simple-define-ref-form-maker string-downcase #t "-ref*"))
+  (define titlecase-raw-ref-gens (simple-define-ref-form-maker string-titlecase #t "-ref*")))
 
 (define-syntax (define-amsthm-wrapper stx)
   (syntax-parse stx
@@ -67,8 +71,11 @@
                      [visibility-param (build-identifier #'env "current-" #'env "-visibility")]
                      [menv (build-identifier #'shortcut "m" #'shortcut)]
                      [parenv (build-identifier #'shortcut "par" #'shortcut)])
-         (with-syntax ([((ref-name ref-tag-expr ref-ref-expr) ...) #`(#,(lowercase-ref-gens #'env)
-                                                                      #,(titlecase-ref-gens #'env))]
+         (with-syntax ([((ref-name ref-tag ref-body ref-naked) ...)
+                        #`(#,(lowercase-ref-gens #'env)
+                           #,(titlecase-ref-gens #'env)
+                           #,(lowercase-raw-ref-gens #'env)
+                           #,(titlecase-raw-ref-gens #'env))]
                        [default-tag (if (attribute show-title) #'(if (autogenerate-tag-param)
                                                                      (normalize-tag title)
                                                                      #f) #'#f)])
@@ -80,7 +87,7 @@
                ;; define visibility parameter
                (define visibility-param (make-parameter #t))
                ;;; define refs
-               (define-ref-form ref-name ref-tag-expr ref-ref-expr) ...
+               (define-ref-form ref-name ref-tag ref-body #:naked ref-naked) ...
                ;;; define raw environment wrapper
                (define (menv title #:tag [tag default-tag] . items)
                  (when (visibility-param)
