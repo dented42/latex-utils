@@ -2,7 +2,7 @@
 
 (define collection "scribble-latex-utils")
 
-(define version "0.0.1.0")
+(define version "0.2.1.2")
 
 (define deps
   '("base"
