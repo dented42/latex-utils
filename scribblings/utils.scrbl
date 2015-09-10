@@ -61,17 +61,20 @@ The Unicode character to LaTeX command procedure.}
 
 Extends or overrides @racket[default-ops].}
 
-@defparam[math-mode in-math? boolean?]{
-
-Parameter determines how math is rendered.}
-
-@defform[(in-math items ...+)]{
-
-Renders items in a context where @racket[math-mode] is @racket[#t]}
-
-@defform[(unmath items ...+)]{
-
-Renders items in a context where @racket[math-mode] is @racket[#f]}
+@; these shouldn't be public, too easy to mess up...
+@;{
+ @defparam[math-mode in-math? boolean?]{
+                                        
+  Parameter determines how math is rendered.}
+  
+ @defform[(in-math items ...+)]{
+                                
+  Renders items in a context where @racket[math-mode] is @racket[#t]}
+ 
+ @defform[(unmath items ...+)]{
+                               
+  Renders items in a context where @racket[math-mode] is @racket[#f]}
+}
 
 @section{General utilities}
 @defmodule[scribble-latex-utils/utils #:packages ("scribble-latex-utils")]

@@ -1,33 +1,33 @@
 #lang at-exp racket/base
 
-(provide #;nested-subs? sub cal mcal bb mbb bf mbf sf msf rm mrm dd delim implies forall exists one)
+(provide m mp um
+         sub
+         cal mcal bb mbb bf mbf sf msf rm mrm
+         dd delim implies one
+         forall exists)
 
-(require (only-in "utils.rkt" m)
-         "private/math.rkt"
+(require "private/math.rkt"
          "private/utils.rkt"
+         "private/unmap.rkt"
          racket/sequence)
+
+(define-syntax-rule (m items ...)
+  (cond [(math-mode) (exact items ...)]
+        [else (in-math (exact "$" items ... "$"))]))
+
+(define-syntax-rule (mp items ...)
+  (cond [(math-mode) (exact items ...)]
+        [else (in-math (exact "\\[" items ... "\\]"))]))
+
+(define-syntax-rule (um items ...)
+  (cond [(math-mode) (unmath (exact "\\mbox{" items ... "}"))]
+        [else (exact items ...)]))
 
 (define (sub . scripts)
   (let rec ([scripts scripts])
     (if (null? scripts)
         ""
         (list "_{" (value->content (car scripts)) (rec (cdr scripts)) "}"))))
-
-;;; this doesn't work
-#;(define nested-subs?
-  (make-parameter #f))
-#;(define (sub . scripts)
-  (let rec ([scripts (map value->content scripts)])
-    (if (null? scripts)
-        ""
-        (if (nested-subs?)
-              (list (car scripts)
-                    (if (null? (cdr scripts))
-                        ""
-                        (list "_{" (rec (cdr scripts)) "}")))
-              (if (null? (cdr scripts))
-                  (list (car scripts))
-                  (rec (cons (list "{" (car scripts) "_" (cadr scripts) "}") (cddr scripts))))))))
 
 (define (cal . stuff)
   (list "{\\mathcal{" stuff "}}"))

@@ -8,14 +8,14 @@
          scribble/latex-properties
          scheme/string
          racket/runtime-path
-         "unmap.rkt"
+         "private/unmap.rkt"
          "private/utils.rkt"
          (for-syntax syntax/id-table syntax/parse)
          (only-in scribble/struct make-flow make-omitable-paragraph flow-paragraphs
                   make-blockquote make-styled-paragraph))
 
 (provide enumlist
-         m mp um renewcommand
+         renewcommand
          graybox ; really specific
          bracket curlies parens
          tenv
@@ -53,16 +53,6 @@
 (define pfsteps-style
   (make-style "Iidentity" `(exact-chars ,(make-tex-addition pfsteps-path)
                             )))
-
-(define-syntax-rule (m items ...)
-  (cond [(math-mode) (exact items ...)]
-        [else (in-math (exact "$" items ... "$"))]))
-(define-syntax-rule (mp items ...)
-  (cond [(math-mode) (exact items ...)]
-        [else (in-math (exact "\\[" items ... "\\]"))]))
-(define-syntax-rule (um items ...)
-  (cond [(math-mode) (unmath (exact "\\mbox{" items ... "}"))]
-        [else (exact items ...)]))
 
 (define (renewcommand item0 item1)
   (make-multiarg-element (make-style "renewcommand" '(exact-chars)) (list item0 item1)))
