@@ -1,6 +1,7 @@
 #lang at-exp racket/base
 
-(provide #;nested-subs? sub cal mcal bb mbb bf mbf sf msf rm mrm dd delim implies forall exists one)
+(provide #;nested-subs? sub cal mcal bb mbb bf mbf sf msf rm mrm dd delim paren
+         implies forall exists one)
 
 (require (only-in "utils.rkt" m)
          "private/math.rkt"
@@ -71,6 +72,9 @@
           stuff
           "\\right"
           (value->content (sequence-ref delims 1) #:auto-wrap? #f #:escape? #t))))
+
+(define (paren . stuff)
+  (delim "()" stuff))
 
 (define implies "\\Rightarrow")
 
