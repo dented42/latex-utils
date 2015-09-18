@@ -1,33 +1,92 @@
 #lang at-exp racket/base
 
-(provide #;nested-subs? sub cal mcal bb mbb bf mbf sf msf rm mrm dd delim implies forall exists one)
+(provide m mp um
+         align* envalign* style-matrix matrix
+         sub
+         cal mcal bb mbb bf mbf sf msf rm mrm
+         dd delim implies one
+         forall exists)
 
-(require (only-in "utils.rkt" m)
-         "private/math.rkt"
+(require "private/math.rkt"
          "private/utils.rkt"
+         "private/unmap.rkt"
+         (for-syntax racket/base
+                     syntax/id-table
+                     syntax/parse)
          racket/sequence)
+
+(define-syntax-rule (m items ...)
+  (cond [(math-mode) (exact items ...)]
+        [else (in-math (exact "$" items ... "$"))]))
+
+(define-syntax-rule (mp items ...)
+  (cond [(math-mode) (exact items ...)]
+        [else (in-math (exact "\\[" items ... "\\]"))]))
+
+(define-syntax-rule (um items ...)
+  (cond [(math-mode) (unmath (exact "\\mbox{" items ... "}"))]
+        [else (exact items ...)]))
+
+(define-syntax (sep-rows stx)
+  (syntax-case stx ()
+    [(_ (args ...) ...)
+     (let ([rows (reverse
+                  (let recur ([rows (map syntax->list (syntax->list #'((args ...) ...)))]
+                              [acc '()])
+                    (define (dorow row last? acc)
+                      (cond [(null? row) acc]
+                            [(null? (cdr row))
+                             (cond [last? (cons (car row) acc)]
+                                   [else (list* "\\\\" (car row) acc)])]
+                            [else (dorow (cdr row) last? (list* "&" (car row) acc))]))
+                    (cond [(null? rows) acc]
+                          [else (recur (cdr rows)
+                                       (append (dorow (car rows) (null? (cdr rows)) '())
+                                               acc))])))])
+       (quasisyntax/loc stx (#,@rows)))]))
+
+(define-syntax (align* stx)
+  (syntax-case stx ()
+    [(_ (args ...) ...)
+     (let ([rows (local-expand #'(sep-rows (args ...) ...) 'expression #f)])
+       #`(envalign* #,@rows))]))
+
+;; align* is a special LaTeX environment that puts its body directly in a math mode context.
+(define-syntax-rule (envalign* items ...)
+  (in-math (env "align*" items ...)))
+
+(define-syntax (style-matrix stx)
+  (define lut (make-free-id-table (hasheq #'l #\l #'r #\r #'c #\c #'bar #\|)))
+  (define-syntax-class style
+    #:attributes (kind)
+    (pattern x:id #:attr kind (free-id-table-ref lut #'x #f) #:when (attribute kind)))
+  (syntax-parse stx
+    [(_ (s:style ...) (args ...) ...)
+     (let* ([argss (map syntax->list (syntax->list #'((args ...) ...)))]
+            [n (length argss)]
+            [_ (when (zero? n) (raise-syntax-error #f "matrix needs at least one row." stx))]
+            [m (length (car argss))]
+            [ss (attribute s.kind)])
+       (unless (for/and ([arg (in-list (cdr argss))])
+                 (= m (length arg)))
+         (raise-syntax-error #f "matrix needs same number of columns in each row." stx))
+       (let ([rows (local-expand #'(sep-rows (args ...) ...) 'expression #f)])
+         (quasisyntax/loc stx (array #,(list->string ss) #,@rows))))]))
+
+(define-syntax (matrix stx)
+  (syntax-case stx ()
+    [(_ (args ...) ...)
+     (let* ([argss (map syntax->list (syntax->list #'((args ...) ...)))]
+            [_ (when (null? argss) (raise-syntax-error #f "matrix needs at least one row." stx))]
+            [m (length (car argss))]
+            [style (datum->syntax stx (build-list m (λ _ #'l)))])
+       (quasisyntax/loc stx (style-matrix #,style (args ...) ...)))]))
 
 (define (sub . scripts)
   (let rec ([scripts scripts])
     (if (null? scripts)
         ""
         (list "_{" (value->content (car scripts)) (rec (cdr scripts)) "}"))))
-
-;;; this doesn't work
-#;(define nested-subs?
-  (make-parameter #f))
-#;(define (sub . scripts)
-  (let rec ([scripts (map value->content scripts)])
-    (if (null? scripts)
-        ""
-        (if (nested-subs?)
-              (list (car scripts)
-                    (if (null? (cdr scripts))
-                        ""
-                        (list "_{" (rec (cdr scripts)) "}")))
-              (if (null? (cdr scripts))
-                  (list (car scripts))
-                  (rec (cons (list "{" (car scripts) "_" (cadr scripts) "}") (cddr scripts))))))))
 
 (define (cal . stuff)
   (list "{\\mathcal{" stuff "}}"))

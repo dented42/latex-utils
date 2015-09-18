@@ -13,7 +13,7 @@
 
 (require racket/runtime-path
          scribble/core scribble/latex-properties
-         "../unmap.rkt")
+         "unmap.rkt")
 
 ;;; paths
 (define-runtime-path id-path "../tex/identity.tex")
