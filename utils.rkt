@@ -10,10 +10,12 @@
          racket/runtime-path
          "private/unmap.rkt"
          "private/utils.rkt"
+         (for-syntax syntax/id-table syntax/parse)
          (only-in scribble/struct make-flow make-omitable-paragraph flow-paragraphs
                   make-blockquote make-styled-paragraph))
 
 (provide enumlist
+         value->content
          renewcommand
          graybox ; really specific
          bracket curlies parens

@@ -4,7 +4,7 @@
          align* envalign* style-matrix matrix
          sub
          cal mcal bb mbb bf mbf sf msf rm mrm
-         dd delim implies one
+         dd delim paren implies one
          forall exists)
 
 (require "private/math.rkt"
@@ -130,6 +130,9 @@
           stuff
           "\\right"
           (value->content (sequence-ref delims 1) #:auto-wrap? #f #:escape? #t))))
+
+(define (paren . stuff)
+  (delim "()" stuff))
 
 (define implies "\\Rightarrow")
 
