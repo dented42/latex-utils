@@ -15,7 +15,7 @@
                   make-blockquote make-styled-paragraph))
 
 (provide enumlist
-         value->content
+         value->content wrap
          renewcommand
          graybox ; really specific
          bracket curlies parens
