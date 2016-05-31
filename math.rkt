@@ -13,6 +13,7 @@
          (for-syntax racket/base
                      syntax/id-table
                      syntax/parse)
+         racket/match
          racket/sequence)
 
 (define-syntax-rule (m items ...)
@@ -122,8 +123,10 @@
   (list "{\\frac{d" stuff "}{d" var "}}"))
 
 (define (delim delims . stuff)
-  (let ([delims (if (and (string? delims) (= 2 (string-length delims)))
-                    (string->list delims)
+  (let ([delims (if (string? delims)
+                    (cond
+                      [(= 2 (string-length delims)) (string->list delims)]
+                      [(string=? "{}") (list "\\{" "\\}")])
                     delims)])
     (list "\\left"
           (value->content (sequence-ref delims 0) #:auto-wrap? #f #:escape? #t)

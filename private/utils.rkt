@@ -64,13 +64,11 @@
            [c (list c)])
          (list c))))
   (cond
-    [(string? v) (wrapper v)]
+    [(content? v) (wrapper v)]
     [(char? v) (wrapper (char->string v))]
     [(number? v) (wrapper (number->string v))]
     [(symbol? v) (value->content (symbol->string v))]
-    [(list? v) (wrapper (if (content? v)
-                            v
-                            (map value->content v)))]))
+    [(list? v) (wrapper (map value->content v))]))
 
 (define (content->block c)
   (if (content? c)

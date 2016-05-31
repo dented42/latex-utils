@@ -4,6 +4,9 @@
          pardef parthm parconj parlem parprop parnotation parcor parprf
          tprf
          ntthm ntlem ntprf
+         current-definition-visibility current-theorem-visibility current-lemma-visibility
+         current-property-visibility current-corollary-visibility current-notation-visibility
+         current-conjecture-visibility current-proof-visibility
          current-definition-tag-prefix current-theorem-tag-prefix current-lemma-tag-prefix
          current-property-tag-prefix current-corollary-tag-prefix current-notation-tag-prefix
          current-conjecture-tag-prefix current-proof-tag-prefix
