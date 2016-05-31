@@ -81,7 +81,9 @@
           [(delayed-element? e) (error "unsupported")]
           [(part-relative-element? e) (error "unsupported")]
           [(list? e) (map recur e)]
-          [else (error 'content->latex-content "non-content ~a" e0)])))
+          ;; e0 must be a content, and the only remaining contents seem to be pictures.
+          ;; A picture cannot have latex content; return it.
+          [else e0])))
 
 (define-syntax-rule (unmath e1 e ...) (parameterize ([math-mode #f]) e1 e ...))
 (define-syntax-rule (in-math e1 e ...) (parameterize ([math-mode #t]) e1 e ...))
