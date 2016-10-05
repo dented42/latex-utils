@@ -1,6 +1,6 @@
 #lang info
 
-(define collection "scribble-latex-utils")
+(define collection "latex-utils")
 
 (define version "0.3.2.0")
 
