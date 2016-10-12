@@ -2,7 +2,7 @@
 
 (define collection "latex-utils")
 
-(define version "0.4.0.0")
+(define version "0.4.0.1")
 
 (define deps
   '("base"
