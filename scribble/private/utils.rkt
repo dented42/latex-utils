@@ -64,10 +64,14 @@
            [c (list c)])
          (list c))))
   (cond
+    ;; If the string contains unbalanced braces then you will get weirdness.
+    ;; That should probably be forbidden.
+    ;; example: (value->content (list "\\frac{\\mathrm{d}" "" "}"))
+    [(string? v) (wrapper v)]
     [(content? v) (wrapper v)]
     [(char? v) (wrapper (char->string v))]
     [(number? v) (wrapper (number->string v))]
-    [(symbol? v) (value->content (symbol->string v))]
+    [(symbol? v) (wrapper (symbol->string v))]
     [(list? v) (wrapper (map value->content v))]))
 
 (define (content->block c)
