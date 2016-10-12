@@ -64,7 +64,7 @@
            [c (list c)])
          (list c))))
   (cond
-    ;; If the string contains unbalanced braces then you will get weirdness.
+    ;; TODO: If the string contains unbalanced braces then you will get weirdness.
     ;; That should probably be forbidden.
     ;; example: (value->content (list "\\frac{\\mathrm{d}" "" "}"))
     [(string? v) (wrapper v)]
