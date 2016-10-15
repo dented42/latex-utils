@@ -4,7 +4,8 @@
          align* envalign* style-matrix matrix
          sub
          cal mcal bb mbb bf mbf sf msf rm mrm
-         dd delim paren implies one
+         delim parens
+         od pd implies one
          forall exists)
 
 (require "private/math.rkt"
@@ -16,9 +17,12 @@
          racket/match
          racket/sequence)
 
+
+; ↓↓↓↓ math modes
+
 (define-syntax-rule (m items ...)
   (cond [(math-mode) (exact items ...)]
-        [else (in-math (exact "$" items ... "$"))]))
+        [else (in-math (exact "\\(" items ... "\\)"))]))
 
 (define-syntax-rule (mp items ...)
   (cond [(math-mode) (exact items ...)]
@@ -27,6 +31,9 @@
 (define-syntax-rule (um items ...)
   (cond [(math-mode) (unmath (exact "\\mbox{" items ... "}"))]
         [else (exact items ...)]))
+
+
+; ↓↓↓↓ something about arrays/matrices?
 
 (define-syntax (sep-rows stx)
   (syntax-case stx ()
@@ -89,6 +96,9 @@
         ""
         (list "_{" (value->content (car scripts)) (rec (cdr scripts)) "}"))))
 
+
+; ↓↓↓↓ math fonts
+
 (define (cal . stuff)
   (list "{\\mathcal{" stuff "}}"))
 
@@ -119,8 +129,8 @@
 (define (mrm . stuff)
   (m (rm stuff)))
 
-(define (dd var . stuff)
-  (list "{\\frac{d" stuff "}{d" var "}}"))
+
+; ↓↓↓↓ math delimiters
 
 (define (delim delims . stuff)
   (let ([delims (if (string? delims)
@@ -134,16 +144,28 @@
           "\\right"
           (value->content (sequence-ref delims 1) #:auto-wrap? #f #:escape? #t))))
 
-(define (paren . stuff)
+(define (parens . stuff)
   (delim "()" stuff))
 
-(define implies "\\Rightarrow")
+; add more syntactic sugar for common delimiters?
+
+
+; ↓↓↓↓ miscellaneous math objects
+
+(define implies "\\Rightarrow") ; redundant with LaTeX \implies
+
+(define (one . content)
+  (list "\\frac{" content "}{" content "}"))
+
+(define (od var . stuff) ; need to add handling for optional order
+  (list "{\\frac{\\mathrm{d}" stuff "}{\\mathrm{d}" var "}}"))
+
+(define (pd var . stuff) ; need to add handling for optional order
+  (list "{\\frac{\\partial" stuff "}{\\partial" var "}}"))
+
 
 (define (forall item (set #f) (delims #f) (relation "∈"))
   (quantifier "∀" item set delims relation))
 
 (define (exists item (set #f) (delims #f) (relation "∈"))
   (quantifier "∃" item set delims relation))
-
-(define (one . content)
-  (list "\\frac{" content "}{" content "}"))
