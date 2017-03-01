@@ -159,7 +159,7 @@ Uses @racket[env] in an idiomatic way, giving a ``title'' to an environment by
 using @racket[(list (brackets title))] as the optional argument.}
 
 @section{Theorem utilities}
-@defmodule[latex-utils/scribble/thorem #:packages ("latex-utils")]
+@defmodule[latex-utils/scribble/theorem #:packages ("latex-utils")]
 
 This section provides theorem and proof tools from @tt{amsthm}.
 
