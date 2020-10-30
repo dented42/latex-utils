@@ -187,7 +187,7 @@ label (not a scribble one!), provide an argument to @racket[#:tag].}
 @defproc[(mnotation [title content?]
                     [#:tag tag (or/c content? #f)]
                     [items content?] ...) content?]
-@defproc[(unthm [title content?]
+@defproc[(mconj [title content?]
                 [#:tag tag (or/c content? #f)]
                 [items content?] ...) content?])]{
 
@@ -223,13 +223,13 @@ to add more paragraphs than it needs.}
 @defproc[(parprop [title content?]
                   [#:tag tag (or/c content? #f)]
                   [items content?] ...) content?]
-@defproc[(parunthm [title content?]
+@defproc[(parmconj [title content?]
                    [#:tag tag (or/c content? #f)]
                    [items content?] ...) content?]
 @defproc[(parprf [#:tag tag (or/c content? #f)]
                  [items content?] ...) content?])]{
 
-Like @racket[parthm], only for @racket[mlem], @racket[mprop], @racket[unthm]
+Like @racket[parthm], only for @racket[mlem], @racket[mprop], @racket[mconj]
 and @racket[ntprf] respectively.}
 
 @section{@tt{listings} utilities}
