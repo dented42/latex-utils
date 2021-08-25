@@ -128,6 +128,26 @@ content contains Unicode characters, then many of them will be rendered to the
 right LaTeX command. Some composing Unicode characters are supported too. See
 @racket[overload-op*].
 
+Example: 
+
+          @codeblock|{
+            #lang scribble/manual
+
+            @title{My Library}
+
+            Welcome to my documentation: @racket[(list 'testing 1 2 3)].
+            #lang scribble/base
+            @(require latex-utils/scribble/utils
+                      latex-utils/scribble/math)
+
+            @title{On the Cookie-Eating Habits of Mice}
+
+            @exact{$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$}
+          }|
+          
+
+
+
 This Unicode translation does not play nicely with @racket[delayed-element?]
 or @racket[part-relative-element?] since I don't know how to correctly wrap
 these to do the translation.}
